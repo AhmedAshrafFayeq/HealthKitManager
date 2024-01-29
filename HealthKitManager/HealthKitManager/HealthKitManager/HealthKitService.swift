@@ -13,6 +13,9 @@ protocol HealthKitServiceProtocol {
     
     func getBloodGlucoseReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getHeartRateReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getOxygenSaturationReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    
+    
     
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
     func getCalories(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
@@ -24,13 +27,13 @@ protocol HealthKitServiceProtocol {
 
 public final class HealthKitService: HealthKitServiceProtocol {
     let healthStore = HKHealthStore()
-    
-
-    
 
     func getBloodGlucoseReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        let quantityType = HKObjectType.quantityType(forIdentifier: .bloodGlucose)!
-        readHealthKitData(quantityType: quantityType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+        guard let bloodGlucoseType = HKObjectType.quantityType(forIdentifier: .bloodGlucose) else {
+            completionHandler(nil, "Blood Glucose data not available")
+            return
+        }
+        readHealthKitData(quantityType: bloodGlucoseType, startDate: startDate, endDate: endDate) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             else {
                 let readings = self?.getBloodGlucoseFormatedResponse(bloodGlucoseSamples: result ?? [])
@@ -40,18 +43,33 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     
     func getHeartRateReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        let quantityType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-        readHealthKitData(quantityType: quantityType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
+            completionHandler(nil, "Heart Rate data not available")
+            return
+        }
+        readHealthKitData(quantityType: heartRateType, startDate: startDate, endDate: endDate) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             else {
-                let readings = self?.getHeartRateFormatedResponse(heartRatesamples: result ?? [])
+                let readings = self?.getHeartRateFormatedResponse(heartRateSamples: result ?? [])
                 completionHandler(readings, nil)
             }
         }
-
+    }
+    
+    func getOxygenSaturationReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+        guard let oxygenSaturationType = HKObjectType.quantityType(forIdentifier: .oxygenSaturation) else {
+            completionHandler(nil, "Oxygen Saturation data not available")
+            return
+        }
+        readHealthKitData(quantityType: oxygenSaturationType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+            if let error {completionHandler(nil, error)}
+            else {
+                let readings = self?.getOxygenSaturationFormatedResponse(OxygenSaturationSamples: result ?? [])
+                completionHandler(readings, nil)
+            }
+        }
     }
 
-    
     
     //MARK: -HealthKit Reading Query
     private func readHealthKitData(quantityType: HKQuantityType, startDate: Date, endDate: Date, completion: @escaping (_ result: [HKQuantitySample]?, String?) -> Void) {
@@ -64,7 +82,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             if let samples = results as? [HKQuantitySample] {
                 completion(samples, nil)
             } else {
-                completion(nil, "Error reading blood glucose data: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil, "Error reading HealthKit data: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
         // Execute the query
@@ -72,7 +90,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     
     
-    //MARK: -HKQuantityTypes Customized Response
+    //MARK: -HKQuantityTypes Customized Responses
     private func getBloodGlucoseFormatedResponse(bloodGlucoseSamples: [HKQuantitySample])-> [[String: Any]]? {
         var data: [[String: Any]] = []
         for sample in bloodGlucoseSamples {
@@ -86,10 +104,9 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
-    
-    private func getHeartRateFormatedResponse(heartRatesamples: [HKQuantitySample])-> [[String: Any]]? {
+    private func getHeartRateFormatedResponse(heartRateSamples: [HKQuantitySample])-> [[String: Any]]? {
         var data: [[String: Any]] = []
-        for sample in heartRatesamples {
+        for sample in heartRateSamples {
             let value = sample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: HKUnit.minute()))
             let date = sample.startDate
             print("Heart Rate Value: \(value) BPM, Date: \(date)")
@@ -100,6 +117,23 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
+    private func getOxygenSaturationFormatedResponse(OxygenSaturationSamples: [HKQuantitySample])-> [[String: Any]]? {
+        var data: [[String: Any]] = []
+        for sample in OxygenSaturationSamples {
+            let value = sample.quantity.doubleValue(for: HKUnit(from: "%")) * 100
+            let date = sample.startDate
+            print("Oxygen Saturation Value: \(value) %, Date: \(date)")
+            data.append(["type": "Oxygen Saturation",
+                    "value": value,
+                    "unit": "%",
+                    "timestamp": date])
+        }
+        return data
+    }
+    
+    
+    
+    
     
     
     

@@ -17,7 +17,26 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
                 
-        HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: "HKQuantityTypeIdentifierBloodGlucose", startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
+        
+    }
+    
+    
+    
+    @IBAction func didTapHeartRate(_ sender: Any) {
+        getReadings(withType: "HKQuantityTypeIdentifierHeartRate")
+        
+    }
+    @IBAction func didTapBloodGlucose(_ sender: Any) {
+        getReadings(withType: "HKQuantityTypeIdentifierBloodGlucose")
+        
+    }
+    
+    @IBAction func didTapOxygenSaturation(_ sender: Any) {
+        getReadings(withType: "HKQuantityTypeIdentifierOxygenSaturation")
+    }
+    
+    func getReadings(withType type: String) {
+        HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
             if let error { print("error") }
             else {
                 print(result)

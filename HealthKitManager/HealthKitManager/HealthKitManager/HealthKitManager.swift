@@ -29,6 +29,11 @@ class HealthKitManager {
                     self?.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
+                    
+                case .OxygenSaturation:
+                    self?.healthKitService.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
+                        completionHandler(result, error)
+                    }
 
                 default: break
                 }
