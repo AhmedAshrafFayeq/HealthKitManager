@@ -18,23 +18,36 @@ class HealthKitManager {
     private init() { }
 
     func readDataFromHealthKitWith(type: String, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        
-        switch HealthKitType(rawValue: type) {
-        case .BloodGlucose:
-            healthKitService.requestAutharization { [weak self] isAuthorized in
-                if isAuthorized {
-                    self?.healthKitService.getBloodGlucose(startDate: startData, endDate: endData) { result, error in
+        healthKitService.requestAutharization { [weak self] isAuthorized in
+            if isAuthorized {
+                switch HealthKitType(rawValue: type) {
+                case .BloodGlucose:
+                    self?.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
-                } else {
-                    completionHandler(nil, "Unauthorized")
+                case .HeartRate:
+                    self?.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
+                        completionHandler(result, error)
+                    }
+
+                default: break
                 }
+
+            } else {
+                completionHandler(nil, "Unauthorized")
             }
-            
-        default: break
         }
     }
 }
+
+
+
+
+
+
+
+
+
 
 struct BloodGlucoseResponse {
     let values: [Date: Double]?
