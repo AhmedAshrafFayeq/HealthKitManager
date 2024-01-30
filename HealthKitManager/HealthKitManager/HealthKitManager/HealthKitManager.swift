@@ -11,34 +11,38 @@ import HealthKit
 
 class HealthKitManager {
     static let sharedInstance = HealthKitManager()
-    
     var healthKitService = HealthKitService()
-    let dispose = DisposeBag()
     
     private init() { }
 
     func readDataFromHealthKitWith(type: String, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         healthKitService.requestAutharization { [weak self] isAuthorized in
+            guard let self else {return}
             if isAuthorized {
                 switch HealthKitType(rawValue: type) {
                     
                 case .BloodGlucose:
-                    self?.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .HeartRate:
-                    self?.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .OxygenSaturation:
-                    self?.healthKitService.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .BloodPressure, .Systolic, .Diastolic:
-                    self?.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
+                        completionHandler(result, error)
+                    }
+                    
+                case .StepsCount:
+                    self.healthKitService.getStepsCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
 
@@ -49,24 +53,6 @@ class HealthKitManager {
                 completionHandler(nil, "Unauthorized")
             }
         }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-struct BloodGlucoseResponse {
-    let values: [Date: Double]?
-    let hasPermission: Bool
-
-    var total: Double {
-        values?.compactMap { $0.value }.reduce(0, +) ?? 0
     }
 }
 
@@ -81,4 +67,5 @@ enum HealthKitType: String {
     case OxygenSaturation           = "HKQuantityTypeIdentifierOxygenSaturation"
     case DistanceWalkingRunning     = "HKQuantityTypeIdentifierDistanceWalkingRunning"
     case FlightsClimbed             = "HKQuantityTypeIdentifierFlightsClimbed"
+    case StepsCount                 = "HKQuantityTypeIdentifierStepCount"
 }
