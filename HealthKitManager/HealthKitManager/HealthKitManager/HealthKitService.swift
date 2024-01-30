@@ -10,30 +10,45 @@ import HealthKit
 import UIKit
 
 protocol HealthKitServiceProtocol {
-    
+    func requestAutharization(completion: @escaping (Bool) -> Void)
     func getBloodGlucoseReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getHeartRateReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getOxygenSaturationReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     
     
     
-    func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
-    func getCalories(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
-    func getDistance(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
-    func getExerciseTime(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
-    func requestAutharization(completion: @escaping (Bool) -> Void)
-    func onPermissionDenied()
+//    func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
+//    func getCalories(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
+//    func getDistance(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
+//    func getExerciseTime(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse>
+//    func onPermissionDenied()
 }
 
 public final class HealthKitService: HealthKitServiceProtocol {
     let healthStore = HKHealthStore()
+    
+    func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void){
+        guard let diastolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic) else {
+            completionHandler(nil, "Blood Pressure data type is not available.")
+            return
+        }
+        readHealthKitData(quantityType: diastolicType, startDate: startDate, endDate: endDate) { [weak self] result, _, error in
+            if let error {completionHandler(nil, error)}
+            else {
+                let readings = self?.getBloodPressureDiastolicFormatedResponse(bloodPressureDiastolicSamples: result ?? [])
+                completionHandler(readings, nil)
+            }
+        }
+    }
+    
 
     func getBloodGlucoseReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         guard let bloodGlucoseType = HKObjectType.quantityType(forIdentifier: .bloodGlucose) else {
             completionHandler(nil, "Blood Glucose data not available")
             return
         }
-        readHealthKitData(quantityType: bloodGlucoseType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+        readHealthKitData(quantityType: bloodGlucoseType, startDate: startDate, endDate: endDate) { [weak self] _, result, error in
             if let error {completionHandler(nil, error)}
             else {
                 let readings = self?.getBloodGlucoseFormatedResponse(bloodGlucoseSamples: result ?? [])
@@ -47,7 +62,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             completionHandler(nil, "Heart Rate data not available")
             return
         }
-        readHealthKitData(quantityType: heartRateType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+        readHealthKitData(quantityType: heartRateType, startDate: startDate, endDate: endDate) { [weak self] _, result, error in
             if let error {completionHandler(nil, error)}
             else {
                 let readings = self?.getHeartRateFormatedResponse(heartRateSamples: result ?? [])
@@ -61,7 +76,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             completionHandler(nil, "Oxygen Saturation data not available")
             return
         }
-        readHealthKitData(quantityType: oxygenSaturationType, startDate: startDate, endDate: endDate) { [weak self] result, error in
+        readHealthKitData(quantityType: oxygenSaturationType, startDate: startDate, endDate: endDate) { [weak self] _, result, error in
             if let error {completionHandler(nil, error)}
             else {
                 let readings = self?.getOxygenSaturationFormatedResponse(OxygenSaturationSamples: result ?? [])
@@ -69,28 +84,74 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
         }
     }
+    func isBloodPressureReques(quantityType: HKQuantityType)-> Bool {
+        return quantityType == HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic) || quantityType == HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic)
+    }
 
     
     //MARK: -HealthKit Reading Query
-    private func readHealthKitData(quantityType: HKQuantityType, startDate: Date, endDate: Date, completion: @escaping (_ result: [HKQuantitySample]?, String?) -> Void) {
+    private func readHealthKitData(quantityType: HKQuantityType, startDate: Date, endDate: Date, completion: @escaping (_ result: [HKCorrelation]?, [HKQuantitySample]?, String?) -> Void) {
         //Create the predicate
         let datePredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         let userEnteredPredicate = NSPredicate(format: "metadata.%K != NO", HKMetadataKeyWasUserEntered)
         let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [datePredicate, userEnteredPredicate])
         // Create a sample query
-        let query = HKSampleQuery(sampleType: quantityType, predicate: compoundPredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { (query, results, error) in
-            if let samples = results as? [HKQuantitySample] {
-                completion(samples, nil)
-            } else {
-                completion(nil, "Error reading HealthKit data: \(error?.localizedDescription ?? "Unknown error")")
+        
+        if isBloodPressureReques(quantityType: quantityType){
+            guard let type = HKQuantityType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure) else {completion (nil, nil, "Error")
+                return
             }
+            let query = HKSampleQuery(sampleType: type, predicate: compoundPredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { (query, results, error) in
+                if let dataList = results as? [HKCorrelation] {
+                    completion(dataList, nil, nil)
+                } else {
+                    completion(nil, nil, "Error reading HealthKit data: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+            HKHealthStore().execute(query)
+        } else {
+            let query = HKSampleQuery(sampleType: quantityType, predicate: compoundPredicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { (query, results, error) in
+                if let samples = results as? [HKQuantitySample] {
+                    completion(nil, samples, nil)
+                } else {
+                    completion(nil, nil, "Error reading HealthKit data: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+            // Execute the query
+            HKHealthStore().execute(query)
+            
         }
-        // Execute the query
-        HKHealthStore().execute(query)
     }
     
-    
     //MARK: -HKQuantityTypes Customized Responses
+    private func getBloodPressureDiastolicFormatedResponse(bloodPressureDiastolicSamples: [HKCorrelation])-> [[String: Any]]? {
+        var data: [[String: Any]] = []
+        guard let type = HKQuantityType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure),
+               let systolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic),
+               let diastolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic) else {
+            return []
+           }
+        
+        for sample in bloodPressureDiastolicSamples {
+            let date = sample.startDate
+            if let data1 = sample.objects(for: systolicType).first as? HKQuantitySample,
+               let data2 = sample.objects(for: diastolicType).first as? HKQuantitySample {
+                
+                let value1 = data1.quantity.doubleValue(for: HKUnit.millimeterOfMercury())
+                let value2 = data2.quantity.doubleValue(for: HKUnit.millimeterOfMercury())
+                
+                print("Blood Pressure Diastolic Value: \(value1) \(value2) mmHg, Date: \(date)")
+                data.append(["type": "Blood Glucose",
+                             "systolic": value1,
+                             "diastolic": value2,
+                             "unit": "mg/dL",
+                             "timestamp": date])
+            }
+            
+            
+        }
+        return data
+    }
     private func getBloodGlucoseFormatedResponse(bloodGlucoseSamples: [HKQuantitySample])-> [[String: Any]]? {
         var data: [[String: Any]] = []
         for sample in bloodGlucoseSamples {
@@ -141,14 +202,6 @@ public final class HealthKitService: HealthKitServiceProtocol {
     
     
     
-    
-    func getBloodGlucose(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse> {
-        let stepsType = HKQuantityType.quantityType(forIdentifier: .bloodGlucose)!
-        let unit = HKUnit(from: "mg/dL")
-        return getStatisticsResult(type: stepsType, unit: unit,
-                              startDate: startDate, endDate: endDate, interval: interval)
-    }
-
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval) -> Single<HealthKitResponse> {
         let stepsType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         let unit = HKUnit.count()

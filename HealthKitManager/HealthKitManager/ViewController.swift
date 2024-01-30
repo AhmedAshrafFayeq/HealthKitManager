@@ -13,31 +13,27 @@ class ViewController: UIViewController {
     public let dispose = DisposeBag()
 
     override func viewDidLoad() {
-
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-                
-        
     }
-    
-    
     
     @IBAction func didTapHeartRate(_ sender: Any) {
         getReadings(withType: "HKQuantityTypeIdentifierHeartRate")
-        
     }
     @IBAction func didTapBloodGlucose(_ sender: Any) {
         getReadings(withType: "HKQuantityTypeIdentifierBloodGlucose")
-        
     }
     
     @IBAction func didTapOxygenSaturation(_ sender: Any) {
         getReadings(withType: "HKQuantityTypeIdentifierOxygenSaturation")
     }
+    @IBAction func didTapBloodPressure(_ sender: Any) {
+        getReadings(withType: "BloodPressure")
+    }
     
     func getReadings(withType type: String) {
         HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
-            if let error { print("error") }
+            if let error { print(error) }
             else {
                 print(result)
             }

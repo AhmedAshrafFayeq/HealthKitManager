@@ -46,7 +46,10 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4f-RB-7zK">
                                         <rect key="frame" x="0.0" y="379.66666666666669" width="393" height="126.33333333333331"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Blood Pressure"/>
+                                        <connections>
+                                            <action selector="didTapBloodPressure:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RL9-in-tJY"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6uC-BJ-Afl">
                                         <rect key="frame" x="0.0" y="506.00000000000006" width="393" height="126.66666666666669"/>

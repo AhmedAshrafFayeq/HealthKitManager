@@ -21,10 +21,12 @@ class HealthKitManager {
         healthKitService.requestAutharization { [weak self] isAuthorized in
             if isAuthorized {
                 switch HealthKitType(rawValue: type) {
+                    
                 case .BloodGlucose:
                     self?.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
+                    
                 case .HeartRate:
                     self?.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
@@ -32,6 +34,11 @@ class HealthKitManager {
                     
                 case .OxygenSaturation:
                     self?.healthKitService.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
+                        completionHandler(result, error)
+                    }
+                    
+                case .BloodPressure:
+                    self?.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
 
@@ -65,6 +72,7 @@ struct BloodGlucoseResponse {
 
 enum HealthKitType: String {
     case BloodGlucose               = "HKQuantityTypeIdentifierBloodGlucose"
+    case BloodPressure              = "BloodPressure"
     case Systolic                   = "bloodPressureSystolic"
     case Diastolic                  = "bloodPressureDiastolic"
     case SleepAnalysis              = "HKCategoryTypeIdentifierSleepAnalysis"
