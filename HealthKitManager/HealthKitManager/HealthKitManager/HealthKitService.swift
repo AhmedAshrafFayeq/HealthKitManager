@@ -18,6 +18,7 @@ protocol HealthKitServiceProtocol {
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getActiveEnergyBurned(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     
 }
 
@@ -121,6 +122,16 @@ public final class HealthKitService: HealthKitServiceProtocol {
             if let error {completionHandler(nil, error)}
             if let result {
                 let readings = self?.getBodyTemperatureResponse(statistics: result)
+                completionHandler(readings, nil)
+            }
+        }
+    }
+    
+    func getActiveEnergyBurned(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+        getStatisticsResult(type: .activeEnergyBurned, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+            if let error {completionHandler(nil, error)}
+            if let result {
+                let readings = self?.getActiveEnergyBurnedResponse(statistics: result)
                 completionHandler(readings, nil)
             }
         }
@@ -321,6 +332,21 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
+    private func getActiveEnergyBurnedResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
+        var data: [[String: Any]] = []
+        if let statistics {
+            for (_ , singleStatistics) in statistics {
+                if let value = singleStatistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
+                    data.append(["type": "Burned Calories",
+                                 "calories": value,
+                                 "unit": "kcal",
+                                 "timestamp": singleStatistics.startDate])
+                }
+            }
+        }
+        return data
+    }
+
 
     public func requestAutharization(completion: @escaping (Bool) -> Void) {
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!

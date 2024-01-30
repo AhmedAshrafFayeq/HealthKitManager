@@ -78,7 +78,10 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cnN-0Z-w6c">
                                         <rect key="frame" x="0.0" y="531.33333333333337" width="393" height="76"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Active Energy Burned"/>
+                                        <connections>
+                                            <action selector="didTapActiveEnergyBurned:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Pvh-d7-v7J"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0r3-bH-5mI">
                                         <rect key="frame" x="0.0" y="607.33333333333337" width="393" height="75.666666666666629"/>

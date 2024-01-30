@@ -44,6 +44,9 @@ class ViewController: UIViewController {
         getReadings(withType: "HKQuantityTypeIdentifierBodyTemperature")
     }
     
+    @IBAction func didTapActiveEnergyBurned(_ sender: Any) {
+        getReadings(withType: "HKQuantityTypeIdentifierActiveEnergyBurned")
+    }
     
     
     func getReadings(withType type: String) {
@@ -52,7 +55,6 @@ class ViewController: UIViewController {
             if let result {
                 print(result)
             }
-             
         }
     }
 }

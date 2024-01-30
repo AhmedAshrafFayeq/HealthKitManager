@@ -36,7 +36,7 @@ class HealthKitManager {
                         completionHandler(result, error)
                     }
                     
-                case .BloodPressure, .Systolic, .Diastolic:
+                case .Systolic, .Diastolic:
                     self.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
@@ -55,6 +55,13 @@ class HealthKitManager {
                     self.healthKitService.getBodyTemperature(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
+                    
+                case .ActiveEnergyBurned:
+                    self.healthKitService.getActiveEnergyBurned(startDate: startData, endDate: endData, interval: interval) { result, error in
+                        completionHandler(result, error)
+                    }
+                    
+                    
                 default: break
                 }
 
@@ -67,7 +74,6 @@ class HealthKitManager {
 
 enum HealthKitType: String {
     case BloodGlucose               = "HKQuantityTypeIdentifierBloodGlucose"
-    case BloodPressure              = "BloodPressure"
     case Systolic                   = "bloodPressureSystolic"
     case Diastolic                  = "bloodPressureDiastolic"
     case SleepAnalysis              = "HKCategoryTypeIdentifierSleepAnalysis"
@@ -77,4 +83,5 @@ enum HealthKitType: String {
     case DistanceWalkingRunning     = "HKQuantityTypeIdentifierDistanceWalkingRunning"
     case FlightsClimbed             = "HKQuantityTypeIdentifierFlightsClimbed"
     case StepsCount                 = "HKQuantityTypeIdentifierStepCount"
+    case ActiveEnergyBurned         = "HKQuantityTypeIdentifierActiveEnergyBurned"
 }
