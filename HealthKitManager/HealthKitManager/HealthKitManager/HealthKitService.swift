@@ -17,6 +17,7 @@ protocol HealthKitServiceProtocol {
     func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     
 }
 
@@ -96,11 +97,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     //MARK: -Steps Count
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        guard let stepsType = HKQuantityType.quantityType(forIdentifier: .stepCount)else {
-            completionHandler(nil, "Step Count data not available")
-            return
-        }
-        getStatisticsResult(type: stepsType, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+        getStatisticsResult(type: .stepCount, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             if let result {
                 let readings = self?.getStepsCountResponse(statistics: result)
@@ -110,14 +107,20 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     //MARK: -Steps Count
     func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        guard let stepsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed)else {
-            completionHandler(nil, "Flights Climbed data not available")
-            return
-        }
-        getStatisticsResult(type: stepsType, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+        getStatisticsResult(type: .flightsClimbed, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             if let result {
                 let readings = self?.getFlightsClimbedResponse(statistics: result)
+                completionHandler(readings, nil)
+            }
+        }
+    }
+    
+    func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+        getStatisticsResult(type: .bodyTemperature, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+            if let error {completionHandler(nil, error)}
+            if let result {
+                let readings = self?.getBodyTemperatureResponse(statistics: result)
                 completionHandler(readings, nil)
             }
         }
@@ -162,8 +165,9 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     
     //MARK: -HealthKit Reading Query using HKStatisticsCollectionQuery
-    private func getStatisticsResult(type: HKQuantityType, startDate: Date, endDate: Date, interval: DateInterval, completion: @escaping (_ result: [Date: HKStatistics]?, String?) -> Void) {
-        guard let query = self.getStatisticsQuery(type: type, endDate: endDate, interval: interval) else {
+    private func getStatisticsResult(type: HKQuantityTypeIdentifier, startDate: Date, endDate: Date, interval: DateInterval, completion: @escaping (_ result: [Date: HKStatistics]?, String?) -> Void) {
+        let options = getQueryOptions(type: type)
+        guard let query = self.getStatisticsQuery(typeIdentifier: type, options: options, endDate: endDate, interval: interval) else {
             completion(nil, "Invalid Query")
             return
         }
@@ -182,23 +186,32 @@ public final class HealthKitService: HealthKitServiceProtocol {
         self.healthStore.execute(query)
     }
     
-    private func getStatisticsQuery(type: HKQuantityType, endDate: Date, interval: DateInterval) -> HKStatisticsCollectionQuery? {
+    private func getStatisticsQuery(typeIdentifier: HKQuantityTypeIdentifier, options: HKStatisticsOptions, endDate: Date, interval: DateInterval) -> HKStatisticsCollectionQuery? {
         let intervalComponents = interval.value
         var anchorComponents = Calendar.current.dateComponents([.day, .month, .year], from: endDate)
         anchorComponents.hour = 0
         guard let anchorDate = Calendar.current.date(from: anchorComponents) else { return nil }
+        guard let type = HKQuantityType.quantityType(forIdentifier: typeIdentifier) else { return nil }
         
         let predicate = NSPredicate(format: "metadata.%K != NO", HKMetadataKeyWasUserEntered)
         let query = HKStatisticsCollectionQuery(
             quantityType: type,
             quantitySamplePredicate: predicate,
-            options: [.cumulativeSum],
+            options: options,
             anchorDate: anchorDate,
             intervalComponents: intervalComponents
         )
         return query
     }
     
+    private func getQueryOptions(type: HKQuantityTypeIdentifier)-> HKStatisticsOptions {
+        switch type {
+        case .bodyTemperature:
+            return [.discreteAverage]
+        default:
+            return [.cumulativeSum]
+        }
+    }
 
     
     //MARK: -HKQuantityTypes Customized Responses
@@ -287,6 +300,21 @@ public final class HealthKitService: HealthKitServiceProtocol {
                 if let value = singleStatistics.sumQuantity()?.doubleValue(for: .count()) {
                     data.append(["type": "Stairs Climbed",
                                  "count": value,
+                                 "timestamp": singleStatistics.startDate])
+                }
+            }
+        }
+        return data
+    }
+    
+    private func getBodyTemperatureResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
+        var data: [[String: Any]] = []
+        if let statistics {
+            for (_ , singleStatistics) in statistics {
+                if let value = singleStatistics.averageQuantity()?.doubleValue(for: .degreeCelsius()) {
+                    data.append(["type": "Body Temperature",
+                                 "count": value,
+                                 "unit": "°C",
                                  "timestamp": singleStatistics.startDate])
                 }
             }

@@ -50,7 +50,11 @@ class HealthKitManager {
                     self.healthKitService.getFlightsClimbedCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
-
+                    
+                case .BodyTemperature:
+                    self.healthKitService.getBodyTemperature(startDate: startData, endDate: endData, interval: interval) { result, error in
+                        completionHandler(result, error)
+                    }
                 default: break
                 }
 
