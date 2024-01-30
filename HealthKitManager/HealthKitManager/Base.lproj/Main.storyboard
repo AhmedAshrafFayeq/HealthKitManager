@@ -62,7 +62,10 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FBD-jy-huq">
                                         <rect key="frame" x="0.0" y="632.66666666666663" width="393" height="126.33333333333337"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Stairs Climbed"/>
+                                        <connections>
+                                            <action selector="didTapStairsClimbed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="d73-dz-y4U"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>

@@ -16,6 +16,7 @@ protocol HealthKitServiceProtocol {
     func getOxygenSaturationReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     
 }
 
@@ -95,8 +96,10 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     //MARK: -Steps Count
     func getStepsCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        
-        let stepsType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        guard let stepsType = HKQuantityType.quantityType(forIdentifier: .stepCount)else {
+            completionHandler(nil, "Step Count data not available")
+            return
+        }
         getStatisticsResult(type: stepsType, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             if let result {
@@ -105,8 +108,20 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
         }
     }
-    
-    
+    //MARK: -Steps Count
+    func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+        guard let stepsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed)else {
+            completionHandler(nil, "Flights Climbed data not available")
+            return
+        }
+        getStatisticsResult(type: stepsType, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+            if let error {completionHandler(nil, error)}
+            if let result {
+                let readings = self?.getFlightsClimbedResponse(statistics: result)
+                completionHandler(readings, nil)
+            }
+        }
+    }
     
     func isBloodPressureReques(quantityType: HKQuantityType)-> Bool {
         return quantityType == HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic) || quantityType == HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic)
@@ -166,6 +181,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         self.healthStore.execute(query)
     }
+    
     private func getStatisticsQuery(type: HKQuantityType, endDate: Date, interval: DateInterval) -> HKStatisticsCollectionQuery? {
         let intervalComponents = interval.value
         var anchorComponents = Calendar.current.dateComponents([.day, .month, .year], from: endDate)
@@ -256,6 +272,20 @@ public final class HealthKitService: HealthKitServiceProtocol {
             for (_ , singleStatistics) in statistics {
                 if let value = singleStatistics.sumQuantity()?.doubleValue(for: .count()) {
                     data.append(["type": "Steps",
+                                 "count": value,
+                                 "timestamp": singleStatistics.startDate])
+                }
+            }
+        }
+        return data
+    }
+    
+    private func getFlightsClimbedResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
+        var data: [[String: Any]] = []
+        if let statistics {
+            for (_ , singleStatistics) in statistics {
+                if let value = singleStatistics.sumQuantity()?.doubleValue(for: .count()) {
+                    data.append(["type": "Stairs Climbed",
                                  "count": value,
                                  "timestamp": singleStatistics.startDate])
                 }

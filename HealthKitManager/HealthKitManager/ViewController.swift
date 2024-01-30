@@ -35,6 +35,12 @@ class ViewController: UIViewController {
     @IBAction func didTapStepsCount(_ sender: Any) {
         getReadings(withType: "HKQuantityTypeIdentifierStepCount")
     }
+    
+    @IBAction func didTapStairsClimbed(_ sender: Any) {
+        getReadings(withType: "HKQuantityTypeIdentifierFlightsClimbed")
+    }
+    
+    
     func getReadings(withType type: String) {
         HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
             if let error { print(error) }

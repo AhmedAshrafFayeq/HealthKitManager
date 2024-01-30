@@ -45,6 +45,11 @@ class HealthKitManager {
                     self.healthKitService.getStepsCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
+                    
+                case .FlightsClimbed:
+                    self.healthKitService.getFlightsClimbedCount(startDate: startData, endDate: endData, interval: interval) { result, error in
+                        completionHandler(result, error)
+                    }
 
                 default: break
                 }
