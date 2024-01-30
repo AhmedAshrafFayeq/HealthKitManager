@@ -28,7 +28,8 @@ class ViewController: UIViewController {
         getReadings(withType: "HKQuantityTypeIdentifierOxygenSaturation")
     }
     @IBAction func didTapBloodPressure(_ sender: Any) {
-        getReadings(withType: "BloodPressure")
+//        getReadings(withType: "bloodPressureSystolic")
+        getReadings(withType: "bloodPressureDiastolic")
     }
     
     func getReadings(withType type: String) {

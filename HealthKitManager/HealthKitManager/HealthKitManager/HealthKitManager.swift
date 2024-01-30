@@ -37,7 +37,7 @@ class HealthKitManager {
                         completionHandler(result, error)
                     }
                     
-                case .BloodPressure:
+                case .BloodPressure, .Systolic, .Diastolic:
                     self?.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }

@@ -28,6 +28,20 @@ protocol HealthKitServiceProtocol {
 public final class HealthKitService: HealthKitServiceProtocol {
     let healthStore = HKHealthStore()
     
+    func getBloodPressureSystolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void){
+        guard let diastolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic) else {
+            completionHandler(nil, "Blood Pressure data type is not available.")
+            return
+        }
+        readHealthKitData(quantityType: diastolicType, startDate: startDate, endDate: endDate) { [weak self] result, _, error in
+            if let error {completionHandler(nil, error)}
+            else {
+                let readings = self?.getBloodPressureFormatedResponse(bloodPressureSamples: result ?? [])
+                completionHandler(readings, nil)
+            }
+        }
+    }
+    
     func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void){
         guard let diastolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureDiastolic) else {
             completionHandler(nil, "Blood Pressure data type is not available.")
@@ -36,7 +50,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
         readHealthKitData(quantityType: diastolicType, startDate: startDate, endDate: endDate) { [weak self] result, _, error in
             if let error {completionHandler(nil, error)}
             else {
-                let readings = self?.getBloodPressureDiastolicFormatedResponse(bloodPressureDiastolicSamples: result ?? [])
+                let readings = self?.getBloodPressureFormatedResponse(bloodPressureSamples: result ?? [])
                 completionHandler(readings, nil)
             }
         }
@@ -124,7 +138,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
     }
     
     //MARK: -HKQuantityTypes Customized Responses
-    private func getBloodPressureDiastolicFormatedResponse(bloodPressureDiastolicSamples: [HKCorrelation])-> [[String: Any]]? {
+    private func getBloodPressureFormatedResponse(bloodPressureSamples: [HKCorrelation])-> [[String: Any]]? {
         var data: [[String: Any]] = []
         guard let type = HKQuantityType.correlationType(forIdentifier: HKCorrelationTypeIdentifier.bloodPressure),
                let systolicType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodPressureSystolic),
@@ -132,7 +146,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             return []
            }
         
-        for sample in bloodPressureDiastolicSamples {
+        for sample in bloodPressureSamples {
             let date = sample.startDate
             if let data1 = sample.objects(for: systolicType).first as? HKQuantitySample,
                let data2 = sample.objects(for: diastolicType).first as? HKQuantitySample {
