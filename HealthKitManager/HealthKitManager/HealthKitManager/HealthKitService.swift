@@ -388,30 +388,19 @@ public final class HealthKitService: HealthKitServiceProtocol {
                 HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
             ]
         let writableTypes: Set<HKSampleType> = [HKQuantityType.quantityType(forIdentifier: .stepCount)!]
-        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else { completion(false); return }
+        guard HKHealthStore.isHealthDataAvailable() else { completion(false); return }
         
-        guard HKHealthStore.isHealthDataAvailable() else {
-            completion(false)
-            return
-        }
-        healthStore.requestAuthorization(toShare: writableTypes, read: healthKitTypesToRead,
-                                         completion: { [weak self] sucess, error in
+        healthStore.requestAuthorization(toShare: writableTypes, read: healthKitTypesToRead, completion: { [weak self] sucess, error in
             guard let self else {completion(false); return}
             DispatchQueue.main.async {
-                if let err = error as? HKError {
-                    print(err.localizedDescription)
-                    completion(false)
-                    return
-                }
+                if let _ = error as? HKError    {completion(false); return}
                 if sucess {
                     if #available(iOS 12.0, *) {
                         switch self.healthStore.authorizationStatus(for: stepType) {
-                        case .notDetermined, .sharingDenied:
-                            completion(false)
-                        case .sharingAuthorized:
-                            completion(true)
-                        @unknown default:
-                            completion(false)
+                        case .notDetermined, .sharingDenied:    completion(false)
+                        case .sharingAuthorized:    completion(true)
+                        @unknown default:   completion(false)
                         }
                     } else {
                         if self.healthStore.authorizationStatus(for: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!) == .sharingAuthorized {
