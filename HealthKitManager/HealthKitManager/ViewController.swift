@@ -52,6 +52,10 @@ class ViewController: UIViewController {
         getReadings(withType: "HKQuantityTypeIdentifierDistanceWalkingRunning")
     }
     
+    @IBAction func didTapSleepAnalysis(_ sender: Any) {
+        getReadings(withType: "HKCategoryTypeIdentifierSleepAnalysis")
+    }
+    
     func getReadings(withType type: String) {
         HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
             if let error { print(error) }

@@ -41,6 +41,11 @@ class HealthKitManager {
                         completionHandler(result, error)
                     }
                     
+                case .SleepAnalysis:
+                    self.healthKitService.getSleepAnalysis(startDate: startData, endDate: endData) { result, error in
+                        completionHandler(result, error)
+                    }
+                    
                 case .StepsCount:
                     self.healthKitService.getStepsCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
