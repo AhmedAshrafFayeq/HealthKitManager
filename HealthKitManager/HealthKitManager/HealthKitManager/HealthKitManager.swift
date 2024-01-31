@@ -61,6 +61,10 @@ class HealthKitManager {
                         completionHandler(result, error)
                     }
                     
+                case .DistanceWalkingRunning:
+                    self.healthKitService.getDistance(startDate: startData, endDate: endData, interval: interval) { result, error in
+                        completionHandler(result, error)
+                    }
                     
                 default: break
                 }

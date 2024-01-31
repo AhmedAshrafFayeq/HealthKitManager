@@ -19,6 +19,7 @@ protocol HealthKitServiceProtocol {
     func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getActiveEnergyBurned(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getDistance(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     
 }
 
@@ -116,7 +117,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
         }
     }
-    
+    //MARK: -Body Temperature
     func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         getStatisticsResult(type: .bodyTemperature, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
@@ -126,12 +127,22 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
         }
     }
-    
+    //MARK: -Calories
     func getActiveEnergyBurned(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         getStatisticsResult(type: .activeEnergyBurned, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
             if let result {
                 let readings = self?.getActiveEnergyBurnedResponse(statistics: result)
+                completionHandler(readings, nil)
+            }
+        }
+    }
+    //MARK: -Distance
+    func getDistance(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+        getStatisticsResult(type: .distanceWalkingRunning, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
+            if let error {completionHandler(nil, error)}
+            if let result {
+                let readings = self?.getDistanceResponse(statistics: result)
                 completionHandler(readings, nil)
             }
         }
@@ -340,6 +351,20 @@ public final class HealthKitService: HealthKitServiceProtocol {
                     data.append(["type": "Burned Calories",
                                  "calories": value,
                                  "unit": "kcal",
+                                 "timestamp": singleStatistics.startDate])
+                }
+            }
+        }
+        return data
+    }
+    private func getDistanceResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
+        var data: [[String: Any]] = []
+        if let statistics {
+            for (_ , singleStatistics) in statistics {
+                if let value = singleStatistics.sumQuantity()?.doubleValue(for: .meter()) {
+                    data.append(["type": "Distance",
+                                 "value": value,
+                                 "unit": "m",
                                  "timestamp": singleStatistics.startDate])
                 }
             }
