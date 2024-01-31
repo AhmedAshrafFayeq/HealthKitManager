@@ -374,27 +374,29 @@ public final class HealthKitService: HealthKitServiceProtocol {
 
 
     public func requestAutharization(completion: @escaping (Bool) -> Void) {
-        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-        let bloodGlucose = HKQuantityType.quantityType(forIdentifier: .bloodGlucose)!
-        // Blood Pressure
-        let bloodPressureSystolic = HKQuantityType.quantityType(forIdentifier: .bloodPressureSystolic)!
-        let bloodPressureDiastolic = HKQuantityType.quantityType(forIdentifier: .bloodPressureDiastolic)!
-        let heartRate = HKQuantityType.quantityType(forIdentifier: .heartRate)!
-        let bodyTemperature = HKQuantityType.quantityType(forIdentifier: .bodyTemperature)!
-        let oxygenSaturation = HKQuantityType.quantityType(forIdentifier: .oxygenSaturation)!
-        let flightsClimbed = HKQuantityType.quantityType(forIdentifier: .flightsClimbed)!
-        
-        let sleepAnalysis = HKQuantityType.categoryType(forIdentifier: .sleepAnalysis)
-        
-        
-        let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
-        let energyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
-        let walkingSpeedType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
-        
-        let quantityTypes = Set<HKObjectType>([stepType, bloodGlucose, bloodPressureSystolic, bloodPressureDiastolic, heartRate, bodyTemperature, oxygenSaturation, flightsClimbed, distanceType, energyBurnedType, walkingSpeedType])
+        let healthKitTypesToRead: Set<HKObjectType> = [
+                HKObjectType.quantityType(forIdentifier: .stepCount)!,
+                HKObjectType.quantityType(forIdentifier: .bloodGlucose)!,
+                HKObjectType.quantityType(forIdentifier: .bloodPressureSystolic)!,
+                HKObjectType.quantityType(forIdentifier: .bloodPressureDiastolic)!,
+                HKObjectType.quantityType(forIdentifier: .bodyTemperature)!,
+                HKObjectType.quantityType(forIdentifier: .oxygenSaturation)!,
+                HKObjectType.quantityType(forIdentifier: .flightsClimbed)!,
+                HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+                HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+                HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!,
+                HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+            ]
         let writableTypes: Set<HKSampleType> = [HKQuantityType.quantityType(forIdentifier: .stepCount)!]
-        healthStore.requestAuthorization(toShare: writableTypes, read: quantityTypes,
-                                         completion: { sucess, error in
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        
+        guard HKHealthStore.isHealthDataAvailable() else {
+            completion(false)
+            return
+        }
+        healthStore.requestAuthorization(toShare: writableTypes, read: healthKitTypesToRead,
+                                         completion: { [weak self] sucess, error in
+            guard let self else {completion(false); return}
             DispatchQueue.main.async {
                 if let err = error as? HKError {
                     print(err.localizedDescription)
@@ -411,18 +413,12 @@ public final class HealthKitService: HealthKitServiceProtocol {
                         @unknown default:
                             completion(false)
                         }
-                        UserDefaults.standard.set(true, forKey: "didCheckPermission")
                     } else {
-                        // swiftlint:disable line_length
                         if self.healthStore.authorizationStatus(for: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!) == .sharingAuthorized {
-                            // swiftlint:enable line_length
-                            print("Permission Granted to Access BodyMass")
                             completion(true)
                         } else {
-                            print("Permission Denied to Access BodyMass")
                             completion(false)
                         }
-                        UserDefaults.standard.set(true, forKey: "didCheckPermission")
                     }
                 }
             }
