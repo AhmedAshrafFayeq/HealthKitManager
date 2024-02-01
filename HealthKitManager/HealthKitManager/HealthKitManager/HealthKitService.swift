@@ -413,37 +413,24 @@ public final class HealthKitService: HealthKitServiceProtocol {
 
 
     public func requestAutharization(completion: @escaping (Bool) -> Void) {
-        let healthKitTypesToRead: Set<HKObjectType> = [
-                HKObjectType.quantityType(forIdentifier: .stepCount)!,
-                HKObjectType.quantityType(forIdentifier: .bloodGlucose)!,
-                HKObjectType.quantityType(forIdentifier: .bloodPressureSystolic)!,
-                HKObjectType.quantityType(forIdentifier: .bloodPressureDiastolic)!,
-                HKObjectType.quantityType(forIdentifier: .bodyTemperature)!,
-                HKObjectType.quantityType(forIdentifier: .oxygenSaturation)!,
-                HKObjectType.quantityType(forIdentifier: .heartRate)!,
-                HKObjectType.quantityType(forIdentifier: .flightsClimbed)!,
-                HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-                HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-                HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!,
-                HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
-            ]
-        let writableTypes: Set<HKSampleType> = [HKQuantityType.quantityType(forIdentifier: .stepCount)!]
+        let healthKitTypesToRead: Set<HKObjectType> = getHealthKitQuantityTypes()
         guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else { completion(false); return }
+        let writableTypes: Set<HKSampleType> = [stepType]
         guard HKHealthStore.isHealthDataAvailable() else { completion(false); return }
         
         healthStore.requestAuthorization(toShare: writableTypes, read: healthKitTypesToRead, completion: { [weak self] sucess, error in
             guard let self else {completion(false); return}
             DispatchQueue.main.async {
-                if let _ = error as? HKError    {completion(false); return}
+                if let _ = error as? HKError {completion(false); return}
                 if sucess {
                     if #available(iOS 12.0, *) {
                         switch self.healthStore.authorizationStatus(for: stepType) {
-                        case .notDetermined, .sharingDenied:    completion(false)
-                        case .sharingAuthorized:    completion(true)
-                        @unknown default:   completion(false)
+                        case .notDetermined, .sharingDenied:   completion(false)
+                        case .sharingAuthorized:                completion(true)
+                        @unknown default:                       completion(false)
                         }
                     } else {
-                        if self.healthStore.authorizationStatus(for: HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!) == .sharingAuthorized {
+                        if self.healthStore.authorizationStatus(for: stepType) == .sharingAuthorized {
                             completion(true)
                         } else {
                             completion(false)
@@ -462,6 +449,23 @@ public final class HealthKitService: HealthKitServiceProtocol {
                 }
             }
         }
+    }
+    
+    func getHealthKitQuantityTypes()-> Set<HKObjectType> {
+        return [
+                HKObjectType.quantityType(forIdentifier: .stepCount)!,
+                HKObjectType.quantityType(forIdentifier: .bloodGlucose)!,
+                HKObjectType.quantityType(forIdentifier: .bloodPressureSystolic)!,
+                HKObjectType.quantityType(forIdentifier: .bloodPressureDiastolic)!,
+                HKObjectType.quantityType(forIdentifier: .bodyTemperature)!,
+                HKObjectType.quantityType(forIdentifier: .oxygenSaturation)!,
+                HKObjectType.quantityType(forIdentifier: .heartRate)!,
+                HKObjectType.quantityType(forIdentifier: .flightsClimbed)!,
+                HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+                HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+                HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!,
+                HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+            ]
     }
 }
 
