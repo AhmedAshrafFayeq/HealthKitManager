@@ -223,7 +223,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
     //MARK: -HealthKit Reading Query using HKStatisticsCollectionQuery
     private func getStatisticsResult(type: HKQuantityTypeIdentifier, startDate: Date, endDate: Date, interval: DateInterval, completion: @escaping (_ result: [Date: HKStatistics]?, String?) -> Void) {
         let options = getQueryOptions(type: type)
-        guard let query = self.getStatisticsQuery(typeIdentifier: type, options: options, endDate: endDate, interval: interval) else {
+        guard let query = getStatisticsQuery(typeIdentifier: type, options: options, endDate: endDate, interval: interval) else {
             completion(nil, "Invalid Query")
             return
         }
@@ -238,7 +238,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
             completion(statistics, nil)
         }
-        self.healthStore.execute(query)
+        healthStore.execute(query)
     }
     
     private func getStatisticsQuery(typeIdentifier: HKQuantityTypeIdentifier, options: HKStatisticsOptions, endDate: Date, interval: DateInterval) -> HKStatisticsCollectionQuery? {
