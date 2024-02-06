@@ -11,10 +11,28 @@ import RxSwift
 class ViewController: UIViewController {
     var healthKitService = HealthKitService()
     public let dispose = DisposeBag()
-
+    
+    @IBOutlet weak var stepsCountLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        healthKitService.startObservingHealthDataChanges { [weak self] in
+            guard let self else { return }
+//            self.getReadings(withType: "HKQuantityTypeIdentifierStepCount")
+            
+            HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: "HKQuantityTypeIdentifierStepCount", startData: Date(), endData: Date(), interval: .day) { result, error in
+                if let error { print(error) }
+                if let result {
+                    print(result)
+                    if let count = result.first?["count"] {
+                        DispatchQueue.main.async {
+                            self.stepsCountLabel.text = "\(count)"
+                        }
+                    }
+                }
+            }
+        }
     }
     
     @IBAction func didTapHeartRate(_ sender: Any) {

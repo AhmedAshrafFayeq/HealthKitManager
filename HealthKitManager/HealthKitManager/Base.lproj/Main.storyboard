@@ -20,7 +20,7 @@
                                 <rect key="frame" x="0.0" y="59" width="393" height="759"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7J-pU-GuM">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Blood Glucose"/>
                                         <connections>
@@ -28,7 +28,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ASh-az-vhK">
-                                        <rect key="frame" x="0.0" y="76" width="393" height="75.666666666666686"/>
+                                        <rect key="frame" x="0.0" y="69" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Heart Rate"/>
                                         <connections>
@@ -36,7 +36,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nsx-GH-9ci">
-                                        <rect key="frame" x="0.0" y="151.66666666666666" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="138" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Oxygen Saturation"/>
                                         <connections>
@@ -44,7 +44,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4f-RB-7zK">
-                                        <rect key="frame" x="0.0" y="227.66666666666669" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="207" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Blood Pressure"/>
                                         <connections>
@@ -52,15 +52,21 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6uC-BJ-Afl">
-                                        <rect key="frame" x="0.0" y="303.66666666666669" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="276" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Steps Count"/>
                                         <connections>
                                             <action selector="didTapStepsCount:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N2T-6s-RKj"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="steps Count" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BqB-Kp-8B7">
+                                        <rect key="frame" x="0.0" y="345" width="393" height="69"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FBD-jy-huq">
-                                        <rect key="frame" x="0.0" y="379.66666666666669" width="393" height="75.666666666666686"/>
+                                        <rect key="frame" x="0.0" y="414" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Stairs Climbed"/>
                                         <connections>
@@ -68,7 +74,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27l-SF-Jov">
-                                        <rect key="frame" x="0.0" y="455.33333333333337" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="483" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Body Temprature"/>
                                         <connections>
@@ -76,7 +82,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cnN-0Z-w6c">
-                                        <rect key="frame" x="0.0" y="531.33333333333337" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="552" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Active Energy Burned"/>
                                         <connections>
@@ -84,7 +90,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0r3-bH-5mI">
-                                        <rect key="frame" x="0.0" y="607.33333333333337" width="393" height="75.666666666666629"/>
+                                        <rect key="frame" x="0.0" y="621" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Distance"/>
                                         <connections>
@@ -92,7 +98,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DTP-U5-iI9">
-                                        <rect key="frame" x="0.0" y="683" width="393" height="76"/>
+                                        <rect key="frame" x="0.0" y="690" width="393" height="69"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Sleep Analysis"/>
                                         <connections>
@@ -111,6 +117,9 @@
                             <constraint firstItem="7Dn-dV-0Sz" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="uWr-wd-wC5"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="stepsCountLabel" destination="BqB-Kp-8B7" id="Fjn-SK-iix"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

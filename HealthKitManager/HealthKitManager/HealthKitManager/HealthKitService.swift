@@ -21,10 +21,35 @@ protocol HealthKitServiceProtocol {
     func getBodyTemperature(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getActiveEnergyBurned(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getDistance(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func startObservingHealthDataChanges(completionHandler: @escaping ()->Void)
 }
 
 public final class HealthKitService: HealthKitServiceProtocol {
     let healthStore = HKHealthStore()
+    
+    func startObservingHealthDataChanges(completionHandler: @escaping ()->Void) {
+        guard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            fatalError("Step count type is no longer available in HealthKit.")
+        }
+        // Create the observer query
+        let observerQuery = HKObserverQuery(sampleType: stepCountType, predicate: nil) { query, completion, error in
+            if let error = error {
+                print("Error occurred while observing changes: \(error.localizedDescription)")
+                return
+            }
+            
+            // Handle updates here
+            print("Health data has been updated.")
+            
+            // Call the completion handler when finished processing updates
+            completionHandler()
+        }
+        
+        // Register the observer query with the health store
+        healthStore.execute(observerQuery)
+        
+        // You can stop observing changes by calling `stop()` on the observerQuery when appropriate.
+    }
     
     //MARK: -Blood Pressure Systolic
     func getBloodPressureSystolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void){
@@ -121,7 +146,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
             }
         }
     }
-    //MARK: -Steps Count
+    //MARK: -Flights Climbed
     func getFlightsClimbedCount(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         getStatisticsResult(type: .flightsClimbed, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}

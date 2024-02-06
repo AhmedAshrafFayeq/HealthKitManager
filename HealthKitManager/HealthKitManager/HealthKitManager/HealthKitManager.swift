@@ -14,6 +14,12 @@ class HealthKitManager {
     var healthKitService = HealthKitService()
     
     private init() { }
+    
+    func startObservingHealthDataChanges(completionHandler: @escaping ()->Void) {
+        healthKitService.startObservingHealthDataChanges {
+            completionHandler()
+        }
+    }
 
     func readDataFromHealthKitWith(type: String, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         healthKitService.requestAutharization { [weak self] isAuthorized in
