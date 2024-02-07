@@ -6,19 +6,16 @@
 //
 
 import UIKit
-import RxSwift
 
 class ViewController: UIViewController {
     var healthKitService = HealthKitService()
-    public let dispose = DisposeBag()
     
     @IBOutlet weak var stepsCountLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         healthKitService.startObservingHealthDataChanges { [weak self] in
-            guard let self else { return }            
+            guard let self else { return }
             HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: .StepsCount, startData: Date(), endData: Date(), interval: .day) { result, error in
                 if let error { print(error) }
                 if let result {
@@ -73,7 +70,7 @@ class ViewController: UIViewController {
     }
     
     func getReadings(withType type: HealthKitType) {
-        HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
+        HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -3, to: Date())!, endData: Date(), interval: .hour) { result, error in
             if let error { print(error) }
             if let result {
                 print(result)

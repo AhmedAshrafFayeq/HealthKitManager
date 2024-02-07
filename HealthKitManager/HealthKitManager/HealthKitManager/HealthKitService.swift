@@ -12,7 +12,7 @@ import UIKit
 protocol HealthKitServiceProtocol {
     func requestAutharization(completion: @escaping (Bool) -> Void)
     func getBloodGlucoseReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
-    func getHeartRateReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
+    func getHeartRateReadings(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getOxygenSaturationReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getSleepAnalysis(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
     func getBloodPressureDiastolicReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void)
@@ -94,15 +94,17 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
     }
     //MARK: -Heart Rate
-    func getHeartRateReadings(startDate: Date, endDate: Date, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
-            completionHandler(nil, "Heart Rate data not available")
-            return
-        }
-        readHealthKitData(objectType: heartRateType, startDate: startDate, endDate: endDate) { [weak self] _, result, error in
+    func getHeartRateReadings(startDate: Date, endDate: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+//        guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
+//            completionHandler(nil, "Heart Rate data not available")
+//            return
+//        }
+        
+        
+        getStatisticsResult(type: .heartRate, startDate: startDate, endDate: endDate, interval: interval) { [weak self] result, error in
             if let error {completionHandler(nil, error)}
-            else {
-                let readings = self?.getHeartRateFormatedResponse(heartRateSamples: result ?? [])
+            if let result {
+                let readings = self?.getHeartRateFormatedResponse(statistics: result)
                 completionHandler(readings, nil)
             }
         }
@@ -288,6 +290,8 @@ public final class HealthKitService: HealthKitServiceProtocol {
         switch type {
         case .bodyTemperature:
             return [.discreteAverage]
+        case .heartRate:
+            return [.discreteAverage, .discreteMin, .discreteMax]
         default:
             return [.cumulativeSum]
         }
@@ -329,18 +333,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
-    private func getHeartRateFormatedResponse(heartRateSamples: [HKSample])-> [[String: Any]] {
-        var data: [[String: Any]] = []
-        guard let samples = heartRateSamples as? [HKQuantitySample] else { return data }
-        for sample in samples {
-            let value = sample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: HKUnit.minute()))
-            data.append(["type": "Heart Rate",
-                         "value": value,
-                         "unit": "BPM",
-                         "timestamp": sample.startDate])
-        }
-        return data
-    }
+
     private func getOxygenSaturationFormatedResponse(oxygenSaturationSamples: [HKSample])-> [[String: Any]] {
         var data: [[String: Any]] = []
         guard let samples = oxygenSaturationSamples as? [HKQuantitySample] else { return data }
@@ -361,6 +354,24 @@ public final class HealthKitService: HealthKitServiceProtocol {
                          "sleepStage": "Deep Sleep",
                          "durationMinutes": sample.value,
                          "timestamp": sample.startDate])
+        }
+        return data
+    }
+    
+    private func getHeartRateFormatedResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
+        var data: [[String: Any]] = []
+        if let statistics {
+            for (_ , singleStatistics) in statistics {
+
+                if let _ = singleStatistics.averageQuantity(), let minHeartRate = singleStatistics.minimumQuantity()
+                    ,let maxHeartRate = singleStatistics.maximumQuantity() {
+                    data.append(["type": "Heart Rate",
+                                 "min": "\(minHeartRate.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))",
+                                 "max": "\(maxHeartRate.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))",
+                                 "unit": "BPM",
+                                 "timestamp": singleStatistics.startDate])
+                }
+            }
         }
         return data
     }
@@ -407,6 +418,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
+    
     private func getActiveEnergyBurnedResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
         var data: [[String: Any]] = []
         if let statistics {
@@ -421,6 +433,7 @@ public final class HealthKitService: HealthKitServiceProtocol {
         }
         return data
     }
+    
     private func getDistanceResponse(statistics: [Date: HKStatistics]?)-> [[String: Any]] {
         var data: [[String: Any]] = []
         if let statistics {

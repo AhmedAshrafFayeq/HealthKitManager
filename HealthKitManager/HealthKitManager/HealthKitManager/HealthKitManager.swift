@@ -33,7 +33,7 @@ class HealthKitManager {
                     }
                     
                 case .HeartRate:
-                    self.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
