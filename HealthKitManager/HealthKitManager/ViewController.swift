@@ -18,10 +18,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         healthKitService.startObservingHealthDataChanges { [weak self] in
-            guard let self else { return }
-//            self.getReadings(withType: "HKQuantityTypeIdentifierStepCount")
-            
-            HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: "HKQuantityTypeIdentifierStepCount", startData: Date(), endData: Date(), interval: .day) { result, error in
+            guard let self else { return }            
+            HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: .StepsCount, startData: Date(), endData: Date(), interval: .day) { result, error in
                 if let error { print(error) }
                 if let result {
                     print(result)
