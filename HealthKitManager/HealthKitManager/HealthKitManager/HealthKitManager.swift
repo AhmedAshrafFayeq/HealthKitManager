@@ -21,11 +21,11 @@ class HealthKitManager {
         }
     }
 
-    func readDataFromHealthKitWith(type: String, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
+    func readDataFromHealthKitWith(type: HealthKitType, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
         healthKitService.requestAutharization { [weak self] isAuthorized in
             guard let self else {return}
             if isAuthorized {
-                switch HealthKitType(rawValue: type) {
+                switch type {
                     
                 case .BloodGlucose:
                     self.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
@@ -76,8 +76,6 @@ class HealthKitManager {
                     self.healthKitService.getDistance(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
-                    
-                default: break
                 }
 
             } else {

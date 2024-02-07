@@ -36,45 +36,45 @@ class ViewController: UIViewController {
     }
     
     @IBAction func didTapHeartRate(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierHeartRate")
+        getReadings(withType: .HeartRate)
     }
     @IBAction func didTapBloodGlucose(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierBloodGlucose")
+        getReadings(withType: .BloodGlucose)
     }
     
     @IBAction func didTapOxygenSaturation(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierOxygenSaturation")
+        getReadings(withType: .OxygenSaturation)
     }
     @IBAction func didTapBloodPressure(_ sender: Any) {
 //        getReadings(withType: "bloodPressureSystolic")
-        getReadings(withType: "bloodPressureDiastolic")
+        getReadings(withType: .Diastolic)
     }
     
     @IBAction func didTapStepsCount(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierStepCount")
+        getReadings(withType: .StepsCount)
     }
     
     @IBAction func didTapStairsClimbed(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierFlightsClimbed")
+        getReadings(withType: .FlightsClimbed)
     }
     
     @IBAction func didTapBodyTemprature(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierBodyTemperature")
+        getReadings(withType: .BodyTemperature)
     }
     
     @IBAction func didTapActiveEnergyBurned(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierActiveEnergyBurned")
+        getReadings(withType: .ActiveEnergyBurned)
     }
     
     @IBAction func didTapDistance(_ sender: Any) {
-        getReadings(withType: "HKQuantityTypeIdentifierDistanceWalkingRunning")
+        getReadings(withType: .DistanceWalkingRunning)
     }
     
     @IBAction func didTapSleepAnalysis(_ sender: Any) {
-        getReadings(withType: "HKCategoryTypeIdentifierSleepAnalysis")
+        getReadings(withType: .SleepAnalysis)
     }
     
-    func getReadings(withType type: String) {
+    func getReadings(withType type: HealthKitType) {
         HealthKitManager.sharedInstance.readDataFromHealthKitWith(type: type, startData: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, endData: Date(), interval: .hour) { result, error in
             if let error { print(error) }
             if let result {
