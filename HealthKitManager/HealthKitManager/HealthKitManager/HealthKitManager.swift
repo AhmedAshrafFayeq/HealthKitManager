@@ -16,8 +16,13 @@ class HealthKitManager {
     private init() { }
     
     func startObservingHealthDataChanges(completionHandler: @escaping ()->Void) {
-        healthKitService.startObservingHealthDataChanges {
-            completionHandler()
+        healthKitService.requestAutharization { [weak self] isAuthorized in
+            guard let self else {return}
+            if isAuthorized {
+                self.healthKitService.startObservingHealthDataChanges {
+                    completionHandler()
+                }
+            }
         }
     }
 
