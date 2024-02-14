@@ -11,15 +11,15 @@ import HealthKit
 
 class HealthKitManager {
     static let sharedInstance = HealthKitManager()
-    var healthKitService = HealthKitService()
+    var healthKitService: HealthKitServiceProtocol?
     
     private init() { }
     
     func startObservingHealthDataChanges(completionHandler: @escaping ()->Void) {
-        healthKitService.requestAutharization { [weak self] isAuthorized in
+        healthKitService?.requestAutharization { [weak self] isAuthorized in
             guard let self else {return}
             if isAuthorized {
-                self.healthKitService.startObservingHealthDataChanges {
+                self.healthKitService?.startObservingHealthDataChanges {
                     completionHandler()
                 }
             }
@@ -27,58 +27,58 @@ class HealthKitManager {
     }
 
     func readDataFromHealthKitWith(type: HealthKitType, startData: Date, endData: Date, interval: DateInterval, completionHandler: @escaping (_ result: [[String: Any]]?, String?) -> Void) {
-        healthKitService.requestAutharization { [weak self] isAuthorized in
+        healthKitService?.requestAutharization { [weak self] isAuthorized in
             guard let self else {return}
             if isAuthorized {
                 switch type {
                     
                 case .BloodGlucose:
-                    self.healthKitService.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService?.getBloodGlucoseReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .HeartRate:
-                    self.healthKitService.getHeartRateReadings(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getHeartRateReadings(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .OxygenSaturation:
-                    self.healthKitService.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService?.getOxygenSaturationReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .Systolic, .Diastolic:
-                    self.healthKitService.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService?.getBloodPressureDiastolicReadings(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .SleepAnalysis:
-                    self.healthKitService.getSleepAnalysis(startDate: startData, endDate: endData) { result, error in
+                    self.healthKitService?.getSleepAnalysis(startDate: startData, endDate: endData) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .StepsCount:
-                    self.healthKitService.getStepsCount(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getStepsCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .FlightsClimbed:
-                    self.healthKitService.getFlightsClimbedCount(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getFlightsClimbedCount(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .BodyTemperature:
-                    self.healthKitService.getBodyTemperature(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getBodyTemperature(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .ActiveEnergyBurned:
-                    self.healthKitService.getActiveEnergyBurned(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getActiveEnergyBurned(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                     
                 case .DistanceWalkingRunning:
-                    self.healthKitService.getDistance(startDate: startData, endDate: endData, interval: interval) { result, error in
+                    self.healthKitService?.getDistance(startDate: startData, endDate: endData, interval: interval) { result, error in
                         completionHandler(result, error)
                     }
                 }

@@ -12,6 +12,11 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var stepsCountLabel: UILabel!
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        HealthKitManager.sharedInstance.healthKitService = HealthKitService()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         healthKitService.startObservingHealthDataChanges { [weak self] in
