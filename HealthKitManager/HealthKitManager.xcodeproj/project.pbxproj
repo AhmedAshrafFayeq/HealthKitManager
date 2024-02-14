@@ -19,7 +19,18 @@
 		6D8E165D2B66665F0071CFDF /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6D8E165C2B66665F0071CFDF /* RxCocoa */; };
 		6D8E165F2B66665F0071CFDF /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 6D8E165E2B66665F0071CFDF /* RxRelay */; };
 		6D8E16612B66665F0071CFDF /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6D8E16602B66665F0071CFDF /* RxSwift */; };
+		6DEC737D2B7D5A510036217E /* HealthKitManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DEC737C2B7D5A510036217E /* HealthKitManagerTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6DEC737E2B7D5A510036217E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D8E160A2B6644430071CFDF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D8E16112B6644430071CFDF;
+			remoteInfo = HealthKitManager;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		6D3F19712B66612E0024ADA5 /* Embed Frameworks */ = {
@@ -46,6 +57,8 @@
 		6D8E162A2B6646BD0071CFDF /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		6D8E162C2B6648280071CFDF /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		6D8E16432B664C250071CFDF /* HealthKitManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthKitManager.entitlements; sourceTree = "<group>"; };
+		6DEC737A2B7D5A510036217E /* HealthKitManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthKitManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DEC737C2B7D5A510036217E /* HealthKitManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +73,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6DEC73772B7D5A510036217E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -67,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				6D8E16142B6644430071CFDF /* HealthKitManager */,
+				6DEC737B2B7D5A510036217E /* HealthKitManagerTests */,
 				6D8E16132B6644430071CFDF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -75,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				6D8E16122B6644430071CFDF /* HealthKitManager.app */,
+				6DEC737A2B7D5A510036217E /* HealthKitManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,6 +126,14 @@
 			path = HealthKitManager;
 			sourceTree = "<group>";
 		};
+		6DEC737B2B7D5A510036217E /* HealthKitManagerTests */ = {
+			isa = PBXGroup;
+			children = (
+				6DEC737C2B7D5A510036217E /* HealthKitManagerTests.swift */,
+			);
+			path = HealthKitManagerTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -131,6 +161,24 @@
 			productReference = 6D8E16122B6644430071CFDF /* HealthKitManager.app */;
 			productType = "com.apple.product-type.application";
 		};
+		6DEC73792B7D5A510036217E /* HealthKitManagerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6DEC73822B7D5A510036217E /* Build configuration list for PBXNativeTarget "HealthKitManagerTests" */;
+			buildPhases = (
+				6DEC73762B7D5A510036217E /* Sources */,
+				6DEC73772B7D5A510036217E /* Frameworks */,
+				6DEC73782B7D5A510036217E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6DEC737F2B7D5A510036217E /* PBXTargetDependency */,
+			);
+			name = HealthKitManagerTests;
+			productName = HealthKitManagerTests;
+			productReference = 6DEC737A2B7D5A510036217E /* HealthKitManagerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -138,11 +186,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					6D8E16112B6644430071CFDF = {
 						CreatedOnToolsVersion = 14.2;
+					};
+					6DEC73792B7D5A510036217E = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 6D8E16112B6644430071CFDF;
 					};
 				};
 			};
@@ -163,6 +215,7 @@
 			projectRoot = "";
 			targets = (
 				6D8E16112B6644430071CFDF /* HealthKitManager */,
+				6DEC73792B7D5A510036217E /* HealthKitManagerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -175,6 +228,13 @@
 				6D8E16222B6644450071CFDF /* LaunchScreen.storyboard in Resources */,
 				6D8E161F2B6644450071CFDF /* Assets.xcassets in Resources */,
 				6D8E161D2B6644430071CFDF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6DEC73782B7D5A510036217E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,7 +253,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6DEC73762B7D5A510036217E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DEC737D2B7D5A510036217E /* HealthKitManagerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6DEC737F2B7D5A510036217E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D8E16112B6644430071CFDF /* HealthKitManager */;
+			targetProxy = 6DEC737E2B7D5A510036217E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		6D8E161B2B6644430071CFDF /* Main.storyboard */ = {
@@ -389,6 +465,44 @@
 			};
 			name = Release;
 		};
+		6DEC73802B7D5A510036217E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B56P4595F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fayeq.HealthKitManagerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HealthKitManager.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HealthKitManager";
+			};
+			name = Debug;
+		};
+		6DEC73812B7D5A510036217E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B56P4595F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fayeq.HealthKitManagerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HealthKitManager.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HealthKitManager";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -406,6 +520,15 @@
 			buildConfigurations = (
 				6D8E16272B6644450071CFDF /* Debug */,
 				6D8E16282B6644450071CFDF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6DEC73822B7D5A510036217E /* Build configuration list for PBXNativeTarget "HealthKitManagerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DEC73802B7D5A510036217E /* Debug */,
+				6DEC73812B7D5A510036217E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
